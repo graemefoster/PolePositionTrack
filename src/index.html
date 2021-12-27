@@ -8,25 +8,27 @@
 
 <body>
     <form>
-        <label for="txtPlane">Plane depth</label><input name="txtPlane" id="txtPlane" value="8">
-        <label for="txtCameraDepth">Camera depth</label><input name="txtCameraDepth" id="txtCameraDepth" value="5">
-        <label for="txtCameraX">Camera X</label><input name="txtCameraX" id="txtCameraX" value="500">
-        <label for="txtCameraY">Camera Y</label><input name="txtCameraY" id="txtCameraY" value="50">
+        <fieldset>
+            <label for="txtPlane">Plane depth from Camera</label><input name="txtPlane" id="txtPlane" type="range" value="8" min="0" max="20">
+            <label for="txtCameraX">Camera X</label><input name="txtCameraX" id="txtCameraX" type="range" value="500" min="0" max="1000">
+            <label for="txtCameraY">Camera Y</label><input name="txtCameraY" id="txtCameraY" type="range" value="50" min="0" max="300">
+        </fieldset>
+        <fieldset>
+            <label for="txtPlanex1">Plane x1</label><input name="txtPlanex1" id="txtPlanex1" type="range" value="250" min="0" max="1000">
+            <label for="txtPlanex2">Plane x2</label><input name="txtPlanex2" id="txtPlanex2" type="range" value="750" min="0" max="1000">
+            <label for="txtPlaney1">Plane y1</label><input name="txtPlaney1" id="txtPlaney1" type="range" value="10" min="0" max="1000">
+            <label for="txtPlaney2">Plane y2</label><input name="txtPlaney2" id="txtPlaney2" type="range" value="300" min="0" max="1000">
+        </fieldset>
+        <fieldset>
+            <label for="txtScreenWidth">Screen Width</label><input name="txtScreenWidth" id="txtScreenWidth" type="range" value="800" min="10" max="2000">
+            <label for="txtScreenHeight">Screen Height</label><input name="txtScreenHeight" id="txtScreenHeight" type="range" value="600" min="10" max="2000">
+        </fieldset>
         <button type="button" onclick="changeCamera()">Change</button>
     </form>
     <canvas id="game" width="800" height="600" style="border:1px solid black;"></canvas>
     <script src="bundle.js"></script>
     <script>
-        function changeCamera() {
-            drawScene(
-                parseInt(document.getElementById('txtCameraX').value),
-                parseInt(document.getElementById('txtCameraY').value),
-                parseInt(document.getElementById('txtCameraDepth').value),
-                parseInt(document.getElementById('txtPlane').value),
-            )
-        }
-
-        changeCamera()
+        drawScene(0)
     </script>
 </body>
 

@@ -47,8 +47,6 @@ export class Camera {
         let xOpposite = ((this.x - point.x) * otherAdjacent) / adjacent
         let pointOnProjectionPlaneX = this.x + xOpposite
 
-        console.log(`Original ${point.x}, ${point.y}: Point on plane: ${xOpposite}, ${yOpposite}`)
-
         return { x: pointOnProjectionPlaneX, y: pointOnProjectionPlaneY }
 
     }
@@ -89,8 +87,6 @@ export class ScreenProjection {
     project(point: Point2D): Point2D {
         const worldXOffsetOnScreen = point.x - this.x1
         const worldYOffsetOnScreen = point.y - this.y1
-        console.log(`world offset Y:${worldYOffsetOnScreen}`)
-        console.log(`pixels per Y:${this.screenPixelsPerWorldPixelY}`)
         return {
             x: worldXOffsetOnScreen * this.screenPixelsPerWorldPixelX,
             y: worldYOffsetOnScreen * this.screenPixelsPerWorldPixelY
@@ -102,21 +98,79 @@ export interface Drawable {
     render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane, screen: ScreenProjection): void
 }
 
-export class RoadSegment implements Drawable {
+export class Road implements Drawable {
+    roadSegments: RoadSegment[]
 
+    constructor(roadSegments: RoadSegment[]) {
+        this.roadSegments = roadSegments
+    }
+
+    render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane, screen: ScreenProjection): void {
+        let previousPoint1: Point2D | null = null
+        let previousPoint2: Point2D | null = null
+        const road = ['#cccccc', '#999999']
+        const grass = ['darkgreen', 'lightgreen']
+
+        this.roadSegments.filter(x => x.distance > camera.z).reverse().forEach(current => {
+
+            let [point1, point2] = current.project(camera, plane, screen)
+            //console.log(`Segment z:${current.distance}. (${point1.x},${point1.y})-(${point2.x},${point2.y})`)
+
+            if (previousPoint1 != null && previousPoint2 != null) {
+                canvas.fillStyle = grass[current.index % 2]
+                canvas.fillRect(0, previousPoint1.y, screen.width, point2.y)
+                canvas.fillStyle = road[current.index % 2]
+                canvas.beginPath()
+                canvas.moveTo(previousPoint1.x, previousPoint1.y)
+                canvas.lineTo(point1.x, point1.y)
+                canvas.lineTo(point2.x, point2.y)
+                canvas.lineTo(previousPoint2.x, previousPoint2.y)
+                canvas.closePath()
+                canvas.fill()
+
+                if (current.index % 2 == 0) {
+
+    
+                    const centreX1 = point1.x + ((point2.x - point1.x) / 2)
+                    const centreX2 = previousPoint1.x + ((previousPoint2.x - previousPoint1.x) / 2)
+                    const centreY1 = point1.y + ((point2.y - point1.y) / 2)
+                    const centreY2 = previousPoint1.y + ((previousPoint2.y - previousPoint1.y) / 2)
+                    canvas.fillStyle = 'white'
+                    canvas.beginPath()
+                    canvas.moveTo(centreX1 - 5, centreY1)
+                    canvas.lineTo(centreX2 - 5, centreY2)
+                    canvas.lineTo(centreX2 + 5, centreY2)
+                    canvas.lineTo(centreX1 + 5, centreY1)
+                    canvas.closePath()
+                    canvas.fill()
+                }
+            }
+
+            previousPoint1 = point1
+            previousPoint2 = point2
+        })
+        let current: RoadSegment | null = null
+
+    }
+}
+
+export class RoadSegment {
+
+    index: number
     xCentre: number
     width: number
     height: number
     distance: number
 
-    constructor(xCentre: number, width: number, height: number, distance: number) {
+    constructor(index: number, xCentre: number, width: number, height: number, distance: number) {
+        this.index = index
         this.xCentre = xCentre
         this.width = width
         this.height = height
         this.distance = distance
     }
 
-    render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane, screen: ScreenProjection): void {
+    project(camera: Camera, plane: ProjectionPlane, screen: ScreenProjection): [point1: Point2D, point2: Point2D] {
         const point1: Point2D = screen.project(camera.projectPoint({
             x: this.xCentre - (this.width / 2),
             y: this.height,
@@ -129,13 +183,6 @@ export class RoadSegment implements Drawable {
             z: this.distance
         }, plane))
 
-        canvas.beginPath()
-        canvas.moveTo(point1.x, point1.y)
-        canvas.lineTo(point2.x, point2.y)
-        canvas.closePath()
-        canvas.stroke()
-
-        console.log(`${point1.x},${point1.y} -> ${point2.x},${point2.y}`)
-
+        return [point1, point2]
     }
 }
