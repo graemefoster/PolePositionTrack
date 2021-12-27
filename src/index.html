@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
+</head>
+
+<body>
+    <form>
+        <label for="txtPlane">Plane depth</label><input name="txtPlane" id="txtPlane" value="8">
+        <label for="txtCameraDepth">Camera depth</label><input name="txtCameraDepth" id="txtCameraDepth" value="5">
+        <label for="txtCameraX">Camera X</label><input name="txtCameraX" id="txtCameraX" value="500">
+        <label for="txtCameraY">Camera Y</label><input name="txtCameraY" id="txtCameraY" value="50">
+        <button type="button" onclick="changeCamera()">Change</button>
+    </form>
+    <canvas id="game" width="800" height="600" style="border:1px solid black;"></canvas>
+    <script src="bundle.js"></script>
+    <script>
+        function changeCamera() {
+            drawScene(
+                parseInt(document.getElementById('txtCameraX').value),
+                parseInt(document.getElementById('txtCameraY').value),
+                parseInt(document.getElementById('txtCameraDepth').value),
+                parseInt(document.getElementById('txtPlane').value),
+            )
+        }
+
+        changeCamera()
+    </script>
+</body>
+
+</html>

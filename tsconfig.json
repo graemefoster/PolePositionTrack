@@ -1,0 +1,12 @@
+{
+  "extends": "./node_modules/gts/tsconfig-google.json",
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "target": "es5",
+    "lib": ["DOM", "ScriptHost"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
+}
