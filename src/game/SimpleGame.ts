@@ -49,7 +49,7 @@ export class Camera {
 
         console.log(`Original ${point.x}, ${point.y}: Point on plane: ${xOpposite}, ${yOpposite}`)
 
-        return {x:pointOnProjectionPlaneX, y:pointOnProjectionPlaneY}
+        return { x: pointOnProjectionPlaneX, y: pointOnProjectionPlaneY }
 
     }
 
@@ -58,7 +58,7 @@ export class Camera {
 
 export class ProjectionPlane {
     z: number
-    
+
     constructor(z: number) {
         this.z = z
     }
@@ -74,7 +74,7 @@ export class ScreenProjection {
     height: number
     screenPixelsPerWorldPixelX: number
     screenPixelsPerWorldPixelY: number
-    
+
     constructor(x1: number, x2: number, y1: number, y2: number, width: number, height: number) {
         this.x1 = x1
         this.x2 = x2
@@ -86,12 +86,12 @@ export class ScreenProjection {
         this.screenPixelsPerWorldPixelY = height / (y2 - y1)
     }
 
-    project(point: Point2D) : Point2D {
+    project(point: Point2D): Point2D {
         const worldXOffsetOnScreen = point.x - this.x1
         const worldYOffsetOnScreen = point.y - this.y1
         console.log(`world offset Y:${worldYOffsetOnScreen}`)
         console.log(`pixels per Y:${this.screenPixelsPerWorldPixelY}`)
-        return  {
+        return {
             x: worldXOffsetOnScreen * this.screenPixelsPerWorldPixelX,
             y: worldYOffsetOnScreen * this.screenPixelsPerWorldPixelY
         }
@@ -99,7 +99,7 @@ export class ScreenProjection {
 }
 
 export interface Drawable {
-    render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane): void
+    render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane, screen: ScreenProjection): void
 }
 
 export class RoadSegment implements Drawable {
@@ -115,19 +115,19 @@ export class RoadSegment implements Drawable {
         this.height = height
         this.distance = distance
     }
-    
-    render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane): void {
-        const point1: Point2D = camera.projectPoint({
+
+    render(canvas: CanvasRenderingContext2D, camera: Camera, plane: ProjectionPlane, screen: ScreenProjection): void {
+        const point1: Point2D = screen.project(camera.projectPoint({
             x: this.xCentre - (this.width / 2),
             y: this.height,
             z: this.distance
-        }, plane)
+        }, plane))
 
-        const point2 = camera.projectPoint({
+        const point2 = screen.project(camera.projectPoint({
             x: this.xCentre + (this.width / 2),
             y: this.height,
             z: this.distance
-        }, plane)
+        }, plane))
 
         canvas.beginPath()
         canvas.moveTo(point1.x, point1.y)
