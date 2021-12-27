@@ -1,6 +1,5 @@
 import { Camera, Point, Point2D, ProjectionPlane, RoadSegment, ScreenProjection } from './game/SimpleGame'
 
-
 const roadSegments: RoadSegment[] = [
     new RoadSegment(500, 500, 300, 10),
     new RoadSegment(500, 500, 300, 20),
